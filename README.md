@@ -43,6 +43,19 @@ Run the headless enrichment pipeline:
 python engine.py --input data/raw_accounts.csv --output data/enriched_accounts.csv --score-threshold 75
 ```
 
+### Direct Apollo Search CLI & MCP Integration
+Execute real-time prospect discovery and contact enrichment directly via CLI or Model Context Protocol (MCP):
+```bash
+# Query Apollo People / Decision-Makers
+node apollo_search.js --title "VP Sales" --company "Apollo.io" --location "Remote"
+
+# Query Apollo Accounts / Target Companies
+node apollo_search.js --companies --company "Proptech" --location "Boston, MA"
+
+# Run Demo Pipeline
+node apollo_search.js --demo
+```
+
 ---
 
 ## 🛡️ License
