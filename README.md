@@ -1,58 +1,56 @@
-# Autonomous GTM Enrichment & Account Resolution Engine
+# Autonomous GTM Enrichment Engine
 
-An autonomous, headless revenue operations pipeline that ingests raw business entity and municipal tax records, executes address skip-tracing, resolves beneficial ownership across nested LLCs, validates name syntax and MX deliverability records, and executes credit-aware multi-provider enrichment waterfalls (Apollo.io + custom scrapers) without manual intervention.
+An autonomous, headless revenue operations pipeline that turns raw municipal property tax rolls into verified, high-converting B2B outbound campaigns.
 
 ---
 
-## 🏗️ Architecture
+## ⚡ The 4-Step Pipeline
 
 ```mermaid
-flowchart TD
-    A[Raw Ingestion\n26k+ Municipal Records & Parcel Filings] --> B[Skip-Tracing & Address Resolution\nNormalizes Physical vs Mailing Footprints]
-    B --> C[Entity Resolution Engine\nUnmasks LLCs, DBAs & Beneficial Owners]
-    C --> D[Name Normalization & Contact Extraction\nParses Principals, Titles & Role Signals]
-    D --> E{Credit-Aware Gate\nBudget & Spend Threshold Check}
-    E -->|Approved| F[Multi-Source Waterfall\nApollo API / Custom Scrapers]
-    E -->|Capped| G[Stage for Manual Review]
-    F --> H[MX Record & Deliverability Validator\nDNS MX Check, Catch-All Detection & Syntax QA]
-    H --> I[Viability Scoring & CRM Sync\nCalculates 0-100 Fit Score -> HubSpot/Sequencer]
+flowchart LR
+    A[1. Ingest & Skip-Trace\n26k+ Municipal Parcels] --> B[2. Unmask Shell LLCs\nState SOS Corporate Filings]
+    B --> C[3. Deliverability QA\nLive DNS MX & Catch-All Checks]
+    C --> D[4. Score & Outbound\n0-100 Viability & CRM Sync]
 ```
 
 ---
 
-## ⚡ Core Capabilities
+## 🎯 How It Works (Step-by-Step)
 
-1. **Skip-Tracing & Address Normalization**: Cross-references physical property parcel addresses with corporate mailing footprints, registered agent filings, and municipal tax rolls. Automatically standardizes USPS address formats and links multi-parcel portfolios to single operational hubs.
-2. **Entity Resolution & Beneficial Ownership**: Strips noisy legal suffixes (`LLC`, `INC`, `CORP`, `HOLDINGS`, `PROPERTIES`), normalizes DBA records, and traces parent-subsidiary corporate trees to identify the true economic decision-maker.
-3. **Name Parsing & Role Identification**: Cleans raw corporate registry filings into structured decision-maker profiles (First, Last, Title, C-Suite/Managing Principal flags), filtering out passive statutory agents and non-operating contacts.
-4. **Credit-Gated Multi-Source Waterfalls (Apollo.io)**: Connects directly to Apollo.io's REST API and custom data scrapers. Enforces strict monthly credit quotas and per-account spend caps to eliminate runaway API costs during batch prospecting.
-5. **MX Record & Deliverability Verification**: Executes live DNS MX record checks, detects catch-all mail server configurations, validates mailbox syntax permutations (`{first}.{last}`, `{first}`, `{f}{last}`), and gates dispatch behind deliverability verification to safeguard domain reputation.
-6. **Deterministic Viability Scoring**: Dynamically scores accounts (0–100) based on asset scale, zoning classification, commercial use codes, and operational velocity signals before syncing downstream to CRM and sequencers.
+### Step 1: Ingest & Skip-Trace (26,000+ Parcels)
+- Ingests raw municipal deed filings, zoning codes, and property tax rolls across 17 towns.
+- Standardizes addresses and clusters multiple properties sharing identical tax-bill mailing footprints into a single parent portfolio.
+
+### Step 2: Unmask Shell LLCs (Secretary of State)
+- Strips legal noise (`LLC`, `Holdings`, `Enterprises`) to identify parent operating entities.
+- Queries State Secretary of State (SOS) corporate registries to extract the real human decision-makers: **Managing Members and General Partners** with legal signing authority.
+
+### Step 3: MX Record & Deliverability Verification
+- Runs live DNS MX checks and detects catch-all mail server configurations.
+- Enforces strict deliverability gates before any email is dispatched to protect domain reputation and prevent bounces.
+
+### Step 4: Viability Scoring & Precision Outbound
+- Deterministic 0–100 scoring based on building square footage (e.g. 20,000+ sq ft) and commercial zoning (Industrial / Flex / Warehouse).
+- Dispatches narrow, hyper-personalized sequences to verified principals:
+  - **18% peak reply rate** in October
+  - **10,000+ emails sent**
+  - **~14 emails per meeting booked**
 
 ---
 
-## 🚀 Quickstart
+## 🚀 Quickstart & Demo
 
-### Prerequisites
-- Python 3.10+
-- `pip install -r requirements.txt`
-
-### Execution
-Run the headless enrichment pipeline:
+### 1. Run the Core Resolution Pipeline
 ```bash
-python engine.py --input data/raw_accounts.csv --output data/enriched_accounts.csv --score-threshold 75
+python engine.py
 ```
 
-### Direct Apollo Search CLI & MCP Integration
-Execute real-time prospect discovery and contact enrichment directly via CLI or Model Context Protocol (MCP):
+### 2. Query the Apollo.io MCP / CLI Integration
 ```bash
-# Query Apollo People / Decision-Makers
-node apollo_search.js --title "VP Sales" --company "Apollo.io" --location "Remote"
+# Live Organization Enrichment
+node apollo_search.js --company "apollo.io"
 
-# Query Apollo Accounts / Target Companies
-node apollo_search.js --companies --company "Proptech" --location "Boston, MA"
-
-# Run Demo Pipeline
+# Interactive Demo Mode
 node apollo_search.js --demo
 ```
 
